@@ -87,6 +87,10 @@ const Products = () => {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    setSearchQuery(queryParams.get('search') || '');
+  }, [location.search]);
+
   const filterByPrice = (product: Product, range: string) => {
     if (range === 'all') return true;
     const [min, max] = range.split('-').map(Number);
