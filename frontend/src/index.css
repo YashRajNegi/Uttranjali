@@ -1,0 +1,87 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 48 33% 97%;
+    --foreground: 120 5% 15%;
+
+    --card: 48 20% 99%;
+    --card-foreground: 120 5% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 120 5% 15%;
+
+    --primary: 122 59% 49%;
+    --primary-foreground: 120 100% 98%;
+
+    --secondary: 25 22% 46%;
+    --secondary-foreground: 48 33% 97%;
+
+    --muted: 48 20% 92%;
+    --muted-foreground: 120 2% 40%;
+
+    --accent: 48 80% 96%;
+    --accent-foreground: 120 5% 15%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 120 100% 98%;
+
+    --border: 120 10% 88%;
+    --input: 120 10% 88%;
+    --ring: 122 59% 40%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 120 30% 96%;
+    --sidebar-foreground: 120 5% 25%;
+    --sidebar-primary: 122 59% 49%;
+    --sidebar-primary-foreground: 120 100% 98%;
+    --sidebar-accent: 48 33% 94%;
+    --sidebar-accent-foreground: 120 5% 15%;
+    --sidebar-border: 120 10% 88%;
+    --sidebar-ring: 122 59% 40%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
+  }
+}
+
+@layer components {
+  .organic-card {
+    @apply rounded-lg bg-card shadow-md hover:shadow-lg transition-shadow duration-300;
+  }
+
+  .badge-organic {
+    @apply bg-organic-primary text-white text-xs px-2 py-1 rounded-full;
+  }
+  
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .btn-primary {
+    @apply bg-organic-primary hover:bg-organic-dark text-white font-medium py-2 px-4 rounded-md transition-colors duration-300;
+  }
+  
+  .btn-secondary {
+    @apply bg-organic-secondary hover:bg-organic-tertiary text-white font-medium py-2 px-4 rounded-md transition-colors duration-300;
+  }
+  
+  .btn-outline {
+    @apply border border-organic-primary text-organic-primary hover:bg-organic-primary hover:text-white font-medium py-2 px-4 rounded-md transition-colors duration-300;
+  }
+}

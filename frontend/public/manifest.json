@@ -1,0 +1,8 @@
+{
+  "name": "Uttranjali",
+  "short_name": "Uttranjali",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3399cc"
+} 
