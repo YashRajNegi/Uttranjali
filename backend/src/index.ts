@@ -19,11 +19,11 @@ const app = express();
 
 // === Middleware ===
 // CORS setup
-const allowedOrigins = [
-  process.env.CLIENT_URL,
+const allowedOrigins = (process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : [
+  'http://localhost:3000',
   'http://localhost:8080',
   'http://localhost:5173'
-].filter((origin): origin is string => Boolean(origin));
+]).map(origin => origin.trim());
 
 app.use(cors({
   origin: function (origin, callback) {
