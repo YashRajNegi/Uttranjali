@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
+      navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
     }
   };
 
