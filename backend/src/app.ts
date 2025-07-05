@@ -30,7 +30,8 @@ app.use(express.urlencoded({ extended: true }));
 
 const allowedOrigins = [
   'http://localhost:8080',
-  'https://uttranjali-2fl6tfxdv-yashrajnegis-projects.vercel.app'
+  'https://uttranjali-2fl6tfxdv-yashrajnegis-projects.vercel.app',
+  'https://uttranjali.vercel.app'
 ];
 
 app.use(cors({
