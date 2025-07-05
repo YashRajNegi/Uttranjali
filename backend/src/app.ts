@@ -40,20 +40,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   : defaultAllowedOrigins;
 
 app.use(cors({
-  origin: function (origin, callback) {
-    console.log('CORS check:', origin); // Debug log
-    if (!origin) {
-      console.log('CORS allowed (no origin)');
-      return callback(null, true);
-    }
-    if (allowedOrigins.includes(origin)) {
-      console.log('CORS allowed:', origin);
-      return callback(null, true);
-    } else {
-      console.log('CORS denied:', origin);
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true, // Allow all origins temporarily
   credentials: true,
 }));
 
