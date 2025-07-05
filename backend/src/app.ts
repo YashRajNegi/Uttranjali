@@ -28,36 +28,17 @@ mongoose.connect(MONGODB_URI)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const defaultAllowedOrigins = [
-  'http://localhost:5000',
+const allowedOrigins = [
   'http://localhost:8080',
-  'http://localhost:5173',
-  'https://your-vercel-domain.vercel.app'
+  'https://uttranjali-2fl6tfxdv-yashrajnegis-projects.vercel.app'
 ];
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
-  : defaultAllowedOrigins;
-
 app.use(cors({
-  origin: true, // Allow all origins temporarily
-  credentials: true,
-}));
-
-app.options('*', cors({
   origin: function (origin, callback) {
-    console.log('CORS OPTIONS check:', origin); // Debug log
-    if (!origin) {
-      console.log('CORS OPTIONS allowed (no origin)');
+    if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    if (allowedOrigins.includes(origin)) {
-      console.log('CORS OPTIONS allowed:', origin);
-      return callback(null, true);
-    } else {
-      console.log('CORS OPTIONS denied:', origin);
-      return callback(new Error('Not allowed by CORS'));
-    }
+    return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
 }));
