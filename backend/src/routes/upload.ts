@@ -82,9 +82,6 @@ const handleUploadError = (err: any, req: Request, res: Response, next: Function
   next();
 };
 
-// Handle preflight requests
-router.options('/', cors());
-
 // Upload route
 router.post('/', auth, admin, async (req: Request, res: Response) => {
   console.log('Upload request received');

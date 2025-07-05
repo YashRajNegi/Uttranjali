@@ -59,7 +59,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow pt-24 bg-background py-8">
+      <main className="flex-grow bg-background pt-20 md:pt-24 px-2 md:px-0">
         <Banner />
         
         {/* Best Selling Products Section */}

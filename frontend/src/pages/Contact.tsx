@@ -26,21 +26,21 @@ const Contact = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow pt-24 bg-background py-8">
-        {/* Hero Section */}
-        <section className="bg-organic-light py-16">
-          <div className="container-custom text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Have questions, suggestions, or feedback? We'd love to hear from you! 
-              Get in touch with our team using any of the methods below.
-            </p>
-          </div>
-        </section>
-        
-        {/* Contact Info & Form Section */}
-        <section className="py-16 bg-white">
-          <div className="container-custom">
+      <main className="flex-grow bg-background pt-20 md:pt-24 px-2 md:px-0">
+        <div className="container-custom">
+          {/* Hero Section */}
+          <section className="bg-organic-light py-16">
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Have questions, suggestions, or feedback? We'd love to hear from you! 
+                Get in touch with our team using any of the methods below.
+              </p>
+            </div>
+          </section>
+          
+          {/* Contact Info & Form Section */}
+          <section className="py-16 bg-white">
             <div className="grid md:grid-cols-2 gap-12">
               {/* Contact Information */}
               <div className="space-y-8">
@@ -156,61 +156,59 @@ const Contact = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-        
-        {/* Map Section - Placeholder */}
-        <section className="py-8 bg-background">
-          <div className="container-custom">
+          </section>
+          
+          {/* Map Section - Placeholder */}
+          <section className="py-8 bg-background">
             <div className="rounded-lg overflow-hidden h-[400px] flex items-center justify-center bg-muted/50 border">
               <div className="text-center">
                 <h3 className="text-lg font-medium mb-2">Store Location</h3>
                 <p className="text-muted-foreground">Map integration would be displayed here</p>
               </div>
             </div>
-          </div>
-        </section>
-        
-        {/* FAQ Section */}
-        <section className="py-16 bg-white">
-          <div className="container-custom">
-            <h2 className="text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
-            
-            <div className="max-w-3xl mx-auto space-y-6">
-              <div className="organic-card p-6">
-                <h3 className="text-lg font-semibold mb-2">Do you offer delivery?</h3>
-                <p className="text-muted-foreground">
-                  Yes, we offer delivery to all areas within a 15-mile radius of our store. 
-                  Free delivery is available on orders over $50. For more details, please visit our delivery page.
-                </p>
-              </div>
+          </section>
+          
+          {/* FAQ Section */}
+          <section className="py-16 bg-white">
+            <div className="container-custom">
+              <h2 className="text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
               
-              <div className="organic-card p-6">
-                <h3 className="text-lg font-semibold mb-2">Are all your products organic?</h3>
-                <p className="text-muted-foreground">
-                  Yes, all products we sell are certified organic. We work directly with farmers and producers 
-                  who follow strict organic and sustainable practices.
-                </p>
-              </div>
-              
-              <div className="organic-card p-6">
-                <h3 className="text-lg font-semibold mb-2">What is your return policy?</h3>
-                <p className="text-muted-foreground">
-                  We stand by the quality of our products. If you're not satisfied with your purchase for any reason, 
-                  you can return it within 7 days for a full refund or exchange.
-                </p>
-              </div>
-              
-              <div className="organic-card p-6">
-                <h3 className="text-lg font-semibold mb-2">How do I know if a product is in stock?</h3>
-                <p className="text-muted-foreground">
-                  Product availability is displayed on each product page. If an item is out of stock, 
-                  you can sign up for notifications to be alerted when it's back in stock.
-                </p>
+              <div className="max-w-3xl mx-auto space-y-6">
+                <div className="organic-card p-6">
+                  <h3 className="text-lg font-semibold mb-2">Do you offer delivery?</h3>
+                  <p className="text-muted-foreground">
+                    Yes, we offer delivery to all areas within a 15-mile radius of our store. 
+                    Free delivery is available on orders over $50. For more details, please visit our delivery page.
+                  </p>
+                </div>
+                
+                <div className="organic-card p-6">
+                  <h3 className="text-lg font-semibold mb-2">Are all your products organic?</h3>
+                  <p className="text-muted-foreground">
+                    Yes, all products we sell are certified organic. We work directly with farmers and producers 
+                    who follow strict organic and sustainable practices.
+                  </p>
+                </div>
+                
+                <div className="organic-card p-6">
+                  <h3 className="text-lg font-semibold mb-2">What is your return policy?</h3>
+                  <p className="text-muted-foreground">
+                    We stand by the quality of our products. If you're not satisfied with your purchase for any reason, 
+                    you can return it within 7 days for a full refund or exchange.
+                  </p>
+                </div>
+                
+                <div className="organic-card p-6">
+                  <h3 className="text-lg font-semibold mb-2">How do I know if a product is in stock?</h3>
+                  <p className="text-muted-foreground">
+                    Product availability is displayed on each product page. If an item is out of stock, 
+                    you can sign up for notifications to be alerted when it's back in stock.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </main>
       
       <Footer />

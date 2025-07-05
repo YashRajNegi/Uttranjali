@@ -53,14 +53,18 @@ const ProductDetail: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow bg-gray-50 py-8 pt-24">
+      <main className="flex-grow bg-background pt-20 md:pt-24 px-2 md:px-0">
         <div className="container-custom">
           {/* Product Detail Section */}
           <div className="bg-white p-8 rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Product Image */}
             <div className="flex flex-col items-center justify-center">
-              <div className="bg-gray-100 border rounded-lg shadow w-full flex items-center justify-center h-[400px]">
-                <img src={product.image} alt={product.name} className="max-h-[350px] object-contain" />
+              <div className="w-full flex items-center justify-center overflow-hidden rounded-lg mb-4 max-h-72 bg-white">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="object-contain w-full h-auto max-h-72"
+                />
               </div>
             </div>
             {/* Product Info */}

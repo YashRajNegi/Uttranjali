@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import uploadRoutes from './routes/upload';
@@ -9,6 +8,7 @@ import productRoutes from './routes/products';
 import orderRoutes from './routes/orders';
 import authRoutes from './routes/auth';
 import { errorHandler, notFound } from './middleware/error';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -28,26 +28,52 @@ mongoose.connect(MONGODB_URI)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CORS configuration - must be before routes
+const defaultAllowedOrigins = [
+  'http://localhost:5000',
+  'http://localhost:8080',
+  'http://localhost:5173',
+  'https://your-vercel-domain.vercel.app'
+];
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+  : defaultAllowedOrigins;
+
 app.use(cors({
-  origin: process.env.CLIENT_URL ? [process.env.CLIENT_URL] : ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:5173'],
+  origin: function (origin, callback) {
+    console.log('CORS check:', origin); // Debug log
+    if (!origin) {
+      console.log('CORS allowed (no origin)');
+      return callback(null, true);
+    }
+    if (allowedOrigins.includes(origin)) {
+      console.log('CORS allowed:', origin);
+      return callback(null, true);
+    } else {
+      console.log('CORS denied:', origin);
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  optionsSuccessStatus: 204
 }));
 
-// Handle OPTIONS preflight for all routes
-app.options('*', cors());
-
-// Log all requests for debugging
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`, {
-    headers: req.headers,
-    body: req.method === 'POST' ? 'POST body omitted' : req.body
-  });
-  next();
-});
+app.options('*', cors({
+  origin: function (origin, callback) {
+    console.log('CORS OPTIONS check:', origin); // Debug log
+    if (!origin) {
+      console.log('CORS OPTIONS allowed (no origin)');
+      return callback(null, true);
+    }
+    if (allowedOrigins.includes(origin)) {
+      console.log('CORS OPTIONS allowed:', origin);
+      return callback(null, true);
+    } else {
+      console.log('CORS OPTIONS denied:', origin);
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -65,12 +91,5 @@ app.get('/api/health', (req, res) => {
 // Error Handling middleware should be last
 app.use(notFound);
 app.use(errorHandler);
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log('CORS enabled for:', process.env.CLIENT_URL || ['http://localhost:3000', 'http://localhost:8080', 'http://localhost:5173']);
-});
 
 export default app; 

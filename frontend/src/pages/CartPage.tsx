@@ -25,11 +25,35 @@ const CartPage = () => {
     navigate('/checkout');
   };
 
+  // Mobile sticky header
+  const MobileHeader = () => (
+    <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b flex items-center h-14 px-4 shadow-sm">
+      <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mr-2">
+        <ChevronLeft className="h-5 w-5" />
+      </Button>
+      <h1 className="text-lg font-bold flex-1 text-center">My Cart</h1>
+      <span className="w-8" />
+    </div>
+  );
+
+  // Mobile sticky bottom bar
+  const MobileBottomBar = () => (
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t p-4 flex flex-col gap-2 shadow-lg">
+      <div className="flex justify-between items-center mb-2">
+        <span className="font-semibold">Total</span>
+        <span className="text-lg font-bold">₹{orderTotal.toFixed(2)}</span>
+      </div>
+      <Button className="w-full bg-organic-primary hover:bg-organic-dark py-4 text-lg" onClick={handleProceedToCheckout}>
+        Proceed to Checkout
+      </Button>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
-      <main className="flex-grow pt-24 bg-background py-8">
+    <div className="min-h-screen flex flex-col bg-background">
+      <MobileHeader />
+      <Navbar className="hidden md:block" />
+      <main className="flex-grow bg-background pt-20 md:pt-24 px-2 md:px-0">
         <div className="container-custom">
           <h1 className="text-3xl font-bold mb-6">Your Shopping Cart</h1>
           
@@ -50,10 +74,10 @@ const CartPage = () => {
               </Button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
               {/* Cart Items */}
               <div className="lg:col-span-2">
-                <div className="organic-card p-6">
+                <div className="organic-card p-3 sm:p-4 md:p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold">Cart Items ({items.length})</h2>
                     <Button 
@@ -69,12 +93,12 @@ const CartPage = () => {
                   
                   <div className="space-y-6">
                     {items.map((item) => (
-                      <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg hover:bg-gray-50 transition-colors">
                         <Link to={`/product/${item.id}`} className="shrink-0">
                           <img 
                             src={item.image} 
                             alt={item.name}
-                            className="w-24 h-24 object-cover rounded-md"
+                            className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-md"
                           />
                         </Link>
                         
@@ -88,7 +112,7 @@ const CartPage = () => {
                           <p className="text-sm text-muted-foreground">{item.category}</p>
                           
                           <div className="mt-2 flex items-center gap-4">
-                            <div className="flex items-center border rounded-md">
+                            <div className="flex items-center border rounded-md overflow-hidden">
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
@@ -97,7 +121,7 @@ const CartPage = () => {
                               >
                                 <Minus className="h-3 w-3" />
                               </Button>
-                              <div className="flex items-center justify-center w-10 h-8 text-sm">
+                              <div className="flex items-center justify-center w-8 sm:w-10 h-8 text-sm">
                                 {item.quantity}
                               </div>
                               <Button 
@@ -121,7 +145,7 @@ const CartPage = () => {
                           </div>
                         </div>
                         
-                        <div className="text-right min-w-[100px]">
+                        <div className="text-right min-w-[80px] sm:min-w-[100px]">
                           {item.discountedPrice ? (
                             <>
                               <div className="font-medium text-lg text-green-600">
@@ -163,7 +187,7 @@ const CartPage = () => {
               
               {/* Order Summary */}
               <div className="lg:col-span-1">
-                <div className="organic-card p-6 sticky top-4">
+                <div className="organic-card p-3 sm:p-4 md:p-6 sticky top-4">
                   <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
                   
                   <Separator className="mb-4" />
@@ -223,8 +247,8 @@ const CartPage = () => {
           )}
         </div>
       </main>
-      
-      <Footer />
+      <MobileBottomBar />
+      <Footer className="hidden md:block" />
     </div>
   );
 };

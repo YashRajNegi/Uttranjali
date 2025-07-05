@@ -54,7 +54,7 @@ const Register = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow bg-background py-12">
+      <main className="flex-grow bg-background pt-20 md:pt-24 px-2 md:px-0">
         <div className="container-custom max-w-md mx-auto">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold">Create an Account</h1>

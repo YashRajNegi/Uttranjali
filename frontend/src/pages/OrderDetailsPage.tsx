@@ -102,7 +102,7 @@ const OrderDetailsPage = () => {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="flex-grow pt-24 bg-background py-8">
+      <main className="flex-grow bg-background pt-20 md:pt-24 px-2 md:px-0">
         <div className="container-custom">
           <div className="mb-6">
             <Link

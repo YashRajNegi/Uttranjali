@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-organic-dark">Uttranjali</h3>
+            <h3 className="text-xl font-bold text-organic-dark">Uttaranjali Organics</h3>
             <p className="text-organic-secondary">Your trusted source for fresh, organic, and sustainable products.</p>
             <div className="flex space-x-4">
               <a href="#" className="text-organic-primary hover:text-organic-dark transition-colors" aria-label="Facebook">
@@ -93,7 +93,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-2">
                 <Mail size={18} className="text-organic-primary" />
-                <span className="text-organic-secondary">hello@eartheatsmarket.com</span>
+                <span className="text-organic-secondary">hello@uttaranjaliorganics.com</span>
               </li>
             </ul>
           </div>
@@ -103,7 +103,7 @@ const Footer = () => {
 
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center text-sm text-organic-secondary">
-          <p>© {new Date().getFullYear()} Uttranjali. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Uttaranjali Organics. All rights reserved.</p>
           <div className="flex space-x-4 mt-3 md:mt-0">
             <Link to="/privacy" className="hover:text-organic-primary transition-colors">
               Privacy Policy

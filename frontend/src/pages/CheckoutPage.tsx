@@ -39,11 +39,13 @@ const CheckoutPage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <main className="flex-grow pt-24 bg-background py-8">
-        <h1 className="text-2xl font-bold mb-4">Checkout</h1>
-        <Button onClick={handlePayment} disabled={loading}>
-          {loading ? 'Processing...' : 'Pay Now'}
-        </Button>
+      <main className="flex-grow bg-background pt-20 md:pt-24 px-2 md:px-0">
+        <div className="container-custom">
+          <h1 className="text-2xl font-bold mb-4">Checkout</h1>
+          <Button onClick={handlePayment} disabled={loading}>
+            {loading ? 'Processing...' : 'Pay Now'}
+          </Button>
+        </div>
       </main>
     </div>
   );

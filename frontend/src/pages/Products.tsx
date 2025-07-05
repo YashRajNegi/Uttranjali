@@ -184,11 +184,11 @@ const Products = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow bg-background py-8 pt-24">
-        <div className="container-custom">
+      <main className="flex-grow bg-background py-4 pt-20 md:py-8 md:pt-24">
+        <div className="container-custom px-2 md:px-0">
           {/* Categories Bar */}
-          <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
-            <div className="flex flex-wrap gap-4">
+          <div className="bg-white p-2 md:p-4 rounded-lg shadow-sm mb-4 md:mb-6 overflow-x-auto">
+            <div className="flex flex-wrap gap-2 md:gap-4">
               {categories.map(category => (
                 <button
                   key={category.id}
@@ -206,10 +206,10 @@ const Products = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
             {/* Filters Sidebar */}
-            <div className="md:col-span-3">
-              <div className="bg-white p-4 rounded-lg shadow-sm">
+            <div className="md:col-span-3 mb-4 md:mb-0">
+              <div className="bg-white p-2 md:p-4 rounded-lg shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold flex items-center">
                     <Filter className="w-4 h-4 mr-2" />
@@ -270,22 +270,20 @@ const Products = () => {
             {/* Products Grid */}
             <div className="md:col-span-9">
               {/* Search and Sort */}
-              <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 mb-6">
+              <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-2 md:gap-4 mb-4 md:mb-6">
                 <form onSubmit={(e) => { e.preventDefault(); updateFilters('search', searchQuery); }} className="flex w-full md:w-1/2">
                   <Input
                     type="search"
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="rounded-r-none"
+                    className="rounded-r-none text-base"
                   />
-                  <Button type="submit" className="rounded-l-none bg-organic-primary hover:bg-organic-dark">
-                    Search
-                  </Button>
+                  <Button type="submit" className="rounded-l-none bg-organic-primary hover:bg-organic-dark text-base px-4">Search</Button>
                 </form>
                 
                 <Select value={sortOrder} onValueChange={setSortOrder}>
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-full md:w-[200px] text-base">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
@@ -319,7 +317,7 @@ const Products = () => {
                     Showing {sortedProducts.length} products
                   </p>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                     {sortedProducts.map(product => (
                       <ProductCard key={product._id} product={product} />
                     ))}

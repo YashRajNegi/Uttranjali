@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { motion } from 'framer-motion';
 
 const Navbar: React.FC = () => {
   const { itemCount } = useCart();
@@ -47,23 +48,30 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white/90 backdrop-blur-lg shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)]' : 'bg-white'
-    }`}>
-      <div className="container-custom py-4">
+    <motion.nav
+      initial={{ opacity: 0, y: -40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-white/90 backdrop-blur-lg shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)]' : 'bg-white'
+      }`}
+    >
+      <div className="container-custom py-2 px-2 md:py-4 md:px-0">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <img 
-              src="/uttranjali-logo.png" 
-              alt="Uttranjali Logo" 
-              className="h-12 w-12 rounded-full object-cover border-2 border-organic-primary shadow-sm"
+          <Link to="/" className="flex items-center space-x-2 min-w-0">
+            <motion.img
+              src="/uttranjali-logo.png"
+              alt="Uttranjali Logo"
+              className="h-10 w-10 md:h-12 md:w-12 rounded-full object-cover border-2 border-organic-primary shadow-sm"
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             />
-            <span className="text-organic-primary text-xl font-bold">UTTRANJALI</span>
+            <span className="text-organic-primary text-lg md:text-xl font-bold truncate">UTTRANJALI</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
             <Link to="/" className="text-foreground hover:text-organic-primary transition-colors">
               Home
             </Link>
@@ -79,12 +87,12 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Search, Cart, Auth and Mobile Menu */}
-          <div className="flex items-center space-x-4">
-            <form onSubmit={handleSearch} className="hidden md:flex relative">
+          <div className="flex items-center space-x-2 md:space-x-4">
+            <form onSubmit={handleSearch} className="hidden md:flex relative w-40 lg:w-60">
               <Input
                 type="search"
                 placeholder="Search products..."
-                className="w-60 pr-10"
+                className="w-full pr-10 text-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -166,7 +174,7 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden pt-4 pb-3 border-t mt-4 animate-fade-in">
+          <div className="md:hidden pt-4 pb-3 border-t mt-4 animate-fade-in bg-white/95 backdrop-blur-lg fixed top-16 left-0 w-full z-50 px-2">
             <div className="flex flex-col space-y-3">
               <Link 
                 to="/" 
@@ -196,11 +204,11 @@ const Navbar: React.FC = () => {
               >
                 Contact
               </Link>
-              <form onSubmit={handleSearch} className="flex mt-2">
+              <form onSubmit={handleSearch} className="flex mt-2 w-full">
                 <Input
                   type="search"
                   placeholder="Search products..."
-                  className="w-full"
+                  className="w-full text-base"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -266,7 +274,7 @@ const Navbar: React.FC = () => {
           </div>
         )}
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 
