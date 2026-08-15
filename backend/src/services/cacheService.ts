@@ -34,7 +34,7 @@ class CacheService {
   // Cache products with TTL
   async cacheProducts(key: string, products: any[], ttl: number = 3600): Promise<void> {
     try {
-      await this.client.setex(key, ttl, JSON.stringify(products));
+      await this.client.setEx(key, ttl, JSON.stringify(products));
     } catch (error) {
       console.error('Cache error:', error);
     }
@@ -54,7 +54,7 @@ class CacheService {
   // Cache user session
   async cacheUserSession(userId: string, userData: any, ttl: number = 1800): Promise<void> {
     try {
-      await this.client.setex(`session:${userId}`, ttl, JSON.stringify(userData));
+      await this.client.setEx(`session:${userId}`, ttl, JSON.stringify(userData));
     } catch (error) {
       console.error('Session cache error:', error);
     }
@@ -76,7 +76,7 @@ class CacheService {
     try {
       const keys = await this.client.keys(pattern);
       if (keys.length > 0) {
-        await this.client.del(...keys);
+        await this.client.del(keys);
       }
     } catch (error) {
       console.error('Cache invalidation error:', error);
@@ -86,7 +86,7 @@ class CacheService {
   // Cache API response
   async cacheApiResponse(key: string, data: any, ttl: number = 300): Promise<void> {
     try {
-      await this.client.setex(key, ttl, JSON.stringify(data));
+      await this.client.setEx(key, ttl, JSON.stringify(data));
     } catch (error) {
       console.error('API cache error:', error);
     }

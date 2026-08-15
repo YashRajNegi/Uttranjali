@@ -2,16 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken, extractTokenFromHeader } from '../utils/jwtUtils';
 import User from '../models/User';
 
-/**
- * Extended Request interface to include authenticated user
- */
-export interface AuthRequest extends Request {
-  user?: {
-    _id: string;
-    email: string;
-    role: string;
-  };
-}
+import { AuthRequest } from '../types/AuthRequest';
 
 /**
  * Middleware to verify Access Token
@@ -76,11 +67,7 @@ export const verifyAccessTokenMiddleware = async (req: AuthRequest, res: Respons
     }
 
     // Step 4: Attach user info to request object
-    req.user = {
-      _id: user._id.toString(),
-      email: user.email,
-      role: user.role
-    };
+    req.user = user as any;
 
     // Continue to next middleware/route handler
     next();
@@ -140,11 +127,7 @@ export const optionalAuthMiddleware = async (req: AuthRequest, res: Response, ne
         const user = await User.findById(decoded.userId).select('-password');
         
         if (user) {
-          req.user = {
-            _id: user._id.toString(),
-            email: user.email,
-            role: user.role
-          };
+          req.user = user as any;
         }
       } catch (error) {
         // Silently ignore token errors for optional auth
