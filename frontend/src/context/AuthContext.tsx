@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import authAPI, { AuthResponse } from '@/services/authAPI';
 
 interface User {
-  id: string;
+  _id: string;
   email: string;
   name: string;
+  role?: string;
 }
 
 interface AuthContextType {
@@ -29,14 +30,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('accessToken');
         if (token) {
-          const response = await authAPI.validateToken(token);
+          const response = await authAPI.validateToken();
           setUser(response.user);
         }
       } catch (err) {
         console.error('Auth check failed:', err);
-        localStorage.removeItem('token');
+        localStorage.removeItem('accessToken');
       } finally {
         setLoading(false);
       }
@@ -46,7 +47,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const handleAuthResponse = (response: AuthResponse) => {
-    localStorage.setItem('token', response.token);
+    localStorage.setItem('accessToken', response.accessToken);
     setUser(response.user);
     navigate('/');
   };
@@ -84,7 +85,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
     setUser(null);
     navigate('/');
   };

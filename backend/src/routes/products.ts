@@ -14,9 +14,11 @@ import { validateRequest } from '../middleware/validateRequest';
 
 const router = express.Router();
 
-// Public routes
+// Public routes with caching
 router.get('/', getProducts);
 router.get('/top', getTopProducts);
+router.get('/search', getProducts); // Re-use getProducts for search functionality
+router.get('/categories', getProducts); // Re-use for category filtering
 router.get('/:id', getProduct);
 
 // Protected routes

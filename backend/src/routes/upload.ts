@@ -12,12 +12,6 @@ dotenv.config();
 
 // Configure Cloudinary
 const configureCloudinary = () => {
-  console.log('Configuring Cloudinary with:', {
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY ? '***' : 'missing',
-    api_secret: process.env.CLOUDINARY_API_SECRET ? '***' : 'missing'
-  });
-
   const requiredEnvVars = [
     'CLOUDINARY_CLOUD_NAME',
     'CLOUDINARY_API_KEY',
@@ -40,9 +34,7 @@ const configureCloudinary = () => {
 try {
   configureCloudinary();
   // Test Cloudinary configuration
-  console.log('Testing Cloudinary configuration...');
   cloudinary.api.ping().then(() => {
-    console.log('✅ Cloudinary configuration is valid');
   }).catch((error) => {
     console.error('❌ Cloudinary configuration error:', error);
   });

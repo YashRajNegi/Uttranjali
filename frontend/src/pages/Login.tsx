@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,7 +12,7 @@ import Footer from '@/components/Footer';
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -38,6 +39,16 @@ const Login = () => {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    if (credentialResponse.credential) {
+      try {
+        await loginWithGoogle(credentialResponse.credential);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Google login failed');
+      }
     }
   };
 
@@ -75,10 +86,16 @@ const Login = () => {
             </div>
 
             <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link to="/forgot-password" className="text-sm text-organic-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
               <PasswordInput
                 id="password"
                 name="password"
-                label="Password"
+                label=""
                 required
                 value={formData.password}
                 onChange={handleChange}
@@ -93,6 +110,33 @@ const Login = () => {
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <div className="text-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => {
+                    // Suppress console errors - OAuth works despite 403 warnings
+                    setError('Google OAuth error: Login failed. Please try again.');
+                  }}
+                  useOneTap={false}
+                />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Testing new Google OAuth configuration
+                </p>
+              </div>
+            </div>
 
             <p className="text-center text-sm text-muted-foreground">
               Don't have an account?{' '}

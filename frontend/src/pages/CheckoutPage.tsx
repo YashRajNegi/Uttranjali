@@ -24,6 +24,13 @@ const CheckoutPage: React.FC = () => {
             description: error,
             variant: 'destructive',
           });
+        },
+        () => {
+          // onCancel callback
+          toast({
+            title: 'Cancelled',
+            description: 'Payment was cancelled',
+          });
         }
       );
     } catch (error) {

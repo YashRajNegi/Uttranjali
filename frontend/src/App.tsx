@@ -6,7 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AddressProvider } from '@/contexts/AddressContext';
-import PageTransition from "@/components/ui/page-transition";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import ScrollToTop from '@/components/ScrollToTop';
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -16,6 +17,8 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import Profile from './pages/Profile';
 import OrdersPage from './pages/OrdersPage';
@@ -28,66 +31,70 @@ import AdminOrderDetailsPage from './pages/admin/AdminOrderDetailsPage';
 import OrderDetailsPage from './pages/OrderDetailsPage';
 
 const queryClient = new QueryClient();
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your_google_client_id';
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
+  <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+    <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <CartProvider>
             <AddressProvider>
               <Toaster />
               <Sonner />
-              <PageTransition>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/product/:id" element={<ProductDetail />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route
-                    path="/orders"
-                    element={
-                      <ProtectedRoute>
-                        <OrdersPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/orders/:id"
-                    element={
-                      <ProtectedRoute>
-                        <OrderDetailsPage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route 
-                    path="/admin" 
-                    element={
-                      <ProtectedRoute requireAdmin>
-                        <AdminLayout />
-                      </ProtectedRoute>
-                    }
-                  >
-                    <Route index element={<AdminHomePage />} />
-                    <Route path="orders" element={<AdminOrdersPage />} />
-                    <Route path="orders/:orderId" element={<AdminOrderDetailsPage />} />
-                    <Route path="products" element={<AdminProductsPage />} />
-                  </Route>
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </PageTransition>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route
+                  path="/orders"
+                  element={
+                    <ProtectedRoute>
+                      <OrdersPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/orders/:id"
+                  element={
+                    <ProtectedRoute>
+                      <OrderDetailsPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route 
+                  path="/admin" 
+                  element={
+                    <ProtectedRoute requireAdmin>
+                      <AdminLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminHomePage />} />
+                  <Route path="orders" element={<AdminOrdersPage />} />
+                  <Route path="orders/:orderId" element={<AdminOrderDetailsPage />} />
+                  <Route path="products" element={<AdminProductsPage />} />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </AddressProvider>
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+</GoogleOAuthProvider>
 );
 
 export default App;

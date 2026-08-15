@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 // Add auth token to all requests
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -21,6 +21,12 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+export interface AuthResponse {
+  accessToken: string;
+  user: UserProfile;
+  expiresIn?: string;
+}
 
 export interface LoginCredentials {
   email: string;
@@ -44,13 +50,9 @@ const authAPI = {
   async login(credentials: LoginCredentials) {
     try {
       const response = await axiosInstance.post('/api/auth/login', credentials);
-      const { token } = response.data;
-      if (token) {
-        localStorage.setItem('token', token);
-      }
       return response.data;
     } catch (error) {
-      console.error('Login error:', error);
+      // Remove console.error to reduce noise during login
       throw error;
     }
   },
@@ -58,11 +60,39 @@ const authAPI = {
   async register(data: RegisterData) {
     try {
       const response = await axiosInstance.post('/api/auth/register', data);
-      const { token } = response.data;
-      localStorage.setItem('token', token);
       return response.data;
     } catch (error) {
-      console.error('Registration error:', error);
+      // Remove console.error to reduce noise during registration
+      throw error;
+    }
+  },
+
+  async googleAuth(credential: string) {
+    try {
+      const response = await axiosInstance.post('/api/auth/google', { credential });
+      return response.data;
+    } catch (error) {
+      // Remove console.error to reduce noise during login
+      throw error;
+    }
+  },
+
+  async forgotPassword(email: string) {
+    try {
+      const response = await axiosInstance.post('/api/auth/forgot-password', { email });
+      return response.data;
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      throw error;
+    }
+  },
+
+  async resetPassword(token: string, password: string) {
+    try {
+      const response = await axiosInstance.post('/api/auth/reset-password', { token, password });
+      return response.data;
+    } catch (error) {
+      console.error('Reset password error:', error);
       throw error;
     }
   },
@@ -70,7 +100,7 @@ const authAPI = {
   async logout() {
     try {
       await axiosInstance.post('/api/auth/logout');
-      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
     } catch (error) {
       console.error('Logout error:', error);
       throw error;
@@ -79,14 +109,14 @@ const authAPI = {
 
   async validateToken() {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       if (!token) {
         throw new Error('No token found');
       }
       const response = await axiosInstance.get('/api/auth/validate');
       return response.data;
     } catch (error) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
       throw error;
     }
   },

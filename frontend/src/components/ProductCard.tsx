@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Star, ShoppingCart, Heart, Leaf, Percent } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/context/CartContext';
@@ -30,14 +29,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index = 0 }) => {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem({
-      id: product._id,
-      name: product.name,
-      price: displayPrice,
-      image: product.image,
-      quantity: 1,
-      category: product.category
-    });
+    
+    if (!isInCart) {
+      const cartItem = {
+        id: product._id,
+        name: product.name,
+        price: displayPrice,
+        discountedPrice: product.discountedPrice,
+        image: product.image,
+        quantity: 1,
+        category: product.category
+      };
+      addItem(cartItem);
+    }
   };
 
   const handleWishlist = (e: React.MouseEvent) => {
@@ -46,193 +50,105 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index = 0 }) => {
     setIsWishlisted(!isWishlisted);
   };
 
-  const cardVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 50,
-      scale: 0.9
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        delay: index * 0.1,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const imageVariants = {
-    hover: {
-      scale: 1.05,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const buttonVariants = {
-    rest: { scale: 1 },
-    hover: { 
-      scale: 1.05,
-      transition: {
-        duration: 0.2,
-        ease: "easeOut"
-      }
-    },
-    tap: { 
-      scale: 0.95,
-      transition: {
-        duration: 0.1
-      }
-    }
-  };
-
   return (
-    <motion.div 
-      className="bg-white rounded-lg shadow-md p-2 sm:p-4 flex flex-col h-full overflow-hidden"
-      variants={cardVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
-      whileHover={{ 
-        y: -8,
-        transition: { duration: 0.3, ease: "easeOut" }
-      }}
-    >
+    <div className="bg-white rounded-lg shadow-md p-2 sm:p-4 flex flex-col h-full overflow-hidden hover:shadow-lg transition-shadow">
       <div className="w-full aspect-square mb-2 sm:mb-4 flex items-center justify-center overflow-hidden rounded-lg relative group">
-        <motion.img 
+        <img 
           src={product.image} 
           alt={product.name} 
           className="object-cover w-full h-full max-h-48 sm:max-h-56"
-          variants={imageVariants}
-          whileHover="hover"
         />
         
         {/* Discount Badge */}
         {discountPercentage > 0 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, type: "spring", stiffness: 500 }}
-            className="absolute top-2 left-2"
-          >
+          <div className="absolute top-2 left-2">
             <Badge className="bg-red-500 text-white text-xs">
               <Percent className="w-3 h-3 mr-1" />
               {discountPercentage}% OFF
             </Badge>
-          </motion.div>
+          </div>
         )}
 
         {/* Wishlist Button */}
-        <motion.button
+        <button
           className="absolute top-2 right-2 p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-colors"
           onClick={handleWishlist}
-          variants={buttonVariants}
-          initial="rest"
-          whileHover="hover"
-          whileTap="tap"
         >
           <Heart 
             className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
           />
-        </motion.button>
+        </button>
 
-        {/* Quick Add to Cart Button */}
-        <motion.div
-          className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          initial={{ y: 20, opacity: 0 }}
-          whileHover={{ y: 0, opacity: 1 }}
+        {/* Quick View Button */}
+        <button
+          className="absolute bottom-2 left-2 px-2 py-1 bg-organic-primary text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={() => navigate(`/product/${product._id}`)}
         >
-          <motion.button
-            className="w-full bg-organic-primary text-white py-2 px-4 rounded-lg font-medium text-sm hover:bg-organic-dark transition-colors"
-            onClick={handleAddToCart}
-            variants={buttonVariants}
-            initial="rest"
-            whileHover="hover"
-            whileTap="tap"
-          >
-            <ShoppingCart className="w-4 h-4 inline mr-2" />
-            {isInCart ? 'In Cart' : 'Add to Cart'}
-          </motion.button>
-        </motion.div>
+          Quick View
+        </button>
       </div>
 
-      <div className="flex-1 flex flex-col justify-between">
-        <div>
-          <motion.h3 
-            className="text-base sm:text-lg font-semibold mb-1 truncate cursor-pointer hover:text-organic-primary transition-colors"
-            whileHover={{ x: 5 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => navigate(`/product/${product._id}`)}
-          >
+      <div className="flex-1 flex flex-col">
+        {/* Organic Badge */}
+        {product.isOrganic && (
+          <div className="flex items-center gap-1 mb-1">
+            <Leaf className="w-3 h-3 text-green-600" />
+            <span className="text-xs text-green-600 font-medium">Organic</span>
+          </div>
+        )}
+
+        <h3 className="text-sm sm:text-lg font-semibold text-gray-900 mb-1 line-clamp-2 hover:text-organic-primary transition-colors">
+          <Link to={`/product/${product._id}`} className="hover:underline">
             {product.name}
-          </motion.h3>
-          
-          <motion.p 
-            className="text-xs sm:text-sm text-muted-foreground mb-1"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            {product.brand}
-          </motion.p>
-          
-          <motion.div 
-            className="flex items-center gap-2 mb-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <span className="text-sm sm:text-base font-bold text-organic-primary">
+          </Link>
+        </h3>
+
+        <p className="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-2">
+          {product.description}
+        </p>
+
+        <div className="flex items-center gap-1 mb-2">
+          <div className="flex items-center">
+            <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" />
+            <span className="text-xs sm:text-sm font-medium ml-1">
+              {product.rating?.toFixed(1) || '4.0'}
+            </span>
+          </div>
+          <span className="text-xs text-gray-500">
+            ({product.numReviews || 0})
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1 mb-2 text-xs text-gray-500">
+          <span>{product.brand}</span>
+          {product.unit && <span>• {product.unit}</span>}
+        </div>
+
+        
+        <div className="mt-auto">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg sm:text-xl font-bold text-gray-900">
               ₹{displayPrice.toFixed(2)}
             </span>
             {product.discountedPrice && (
-              <span className="text-xs text-gray-500 line-through">
+              <span className="text-sm text-gray-500 line-through">
                 ₹{product.price.toFixed(2)}
               </span>
             )}
-          </motion.div>
+          </div>
 
-          {/* Rating */}
-          <motion.div 
-            className="flex items-center gap-1 mb-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            {[...Array(5)].map((_, i) => (
-              <Star 
-                key={i}
-                className={`w-3 h-3 ${i < 4 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-              />
-            ))}
-            <span className="text-xs text-gray-500 ml-1">(4.0)</span>
-          </motion.div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <motion.button
-            className="w-full py-2 mt-2 text-sm sm:text-base bg-organic-primary text-white rounded-lg font-medium hover:bg-organic-dark transition-colors"
+          <Button
             onClick={handleAddToCart}
-            variants={buttonVariants}
-            initial="rest"
-            whileHover="hover"
-            whileTap="tap"
+            disabled={isInCart}
+            className={`w-full ${isInCart ? 'bg-green-600 hover:bg-green-700' : 'bg-organic-primary hover:bg-organic-dark'}`}
+            size="sm"
           >
-            <ShoppingCart className="w-4 h-4 inline mr-2" />
+            <ShoppingCart className="w-4 h-4 mr-2" />
             {isInCart ? 'In Cart' : 'Add to Cart'}
-          </motion.button>
-        </motion.div>
+          </Button>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

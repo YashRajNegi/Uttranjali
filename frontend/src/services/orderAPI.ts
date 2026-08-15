@@ -14,11 +14,21 @@ const axiosInstance = axios.create({
 // Add auth token to requests
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for error handling
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return response;
   },
   (error) => {
     return Promise.reject(error);
@@ -44,6 +54,12 @@ export interface CreateOrderData {
   orderItems: OrderItem[];
   shippingAddress: ShippingAddress;
   paymentMethod: string;
+  paymentResult?: {
+    id: string;
+    status: string;
+    update_time: string;
+    email_address: string;
+  };
   itemsPrice: number;
   taxPrice: number;
   shippingPrice: number;
@@ -75,8 +91,22 @@ export interface Order {
 export const orderAPI = {
   // Create a new order
   createOrder: async (orderData: CreateOrderData): Promise<Order> => {
-    const response = await axiosInstance.post('/api/orders', orderData);
-    return response.data;
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+      throw new Error('Authentication required. Please log in again.');
+    }
+    
+    try {
+      const response = await axiosInstance.post('/api/orders', orderData);
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem('accessToken');
+        // Force page reload to trigger re-authentication
+        window.location.href = '/login';
+      }
+      throw error;
+    }
   },
 
   // Get user's orders

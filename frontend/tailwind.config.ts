@@ -63,7 +63,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Earth Eats Market custom colors
+				// Uttranjali custom colors
 				organic: {
 					primary: '#4CAF50',
 					secondary: '#8D6E63',

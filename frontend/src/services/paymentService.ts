@@ -7,7 +7,7 @@ if (!RAZORPAY_KEY) {
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const displayRazorpay = async (amount: number, onSuccess: (paymentId: string) => void, onError: (error: string) => void) => {
+export const displayRazorpay = async (amount: number, onSuccess: (paymentId: string) => void, onError: (error: string) => void, onCancel: () => void) => {
   const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
   if (!res) {
     onError('Razorpay SDK failed to load. Are you online?');
@@ -15,22 +15,27 @@ export const displayRazorpay = async (amount: number, onSuccess: (paymentId: str
   }
 
   try {
+    // Use the actual amount passed from the cart
+    const paymentAmount = amount;
+    
     const response = await fetch(`${API_URL}/api/orders/create-order`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ amount }),
+      body: JSON.stringify({ amount: paymentAmount }),
     });
     const data = await response.json();
-    console.log('Razorpay order data:', data);
+
+    // Force the correct amount - multiply by 100 for paise
+    const finalAmount = paymentAmount * 100;
 
     const options = {
       key: RAZORPAY_KEY,
-      amount: data.amount,
-      currency: data.currency,
-      name: 'Earth Eats Market',
-      description: 'Payment for your order',
+      amount: finalAmount,
+      currency: 'INR',
+      name: 'Uttranjali',
+      description: `Payment for your order - ₹${paymentAmount}`,
       order_id: data.id,
       handler: function (response) {
         onSuccess(response.razorpay_payment_id);
@@ -44,9 +49,9 @@ export const displayRazorpay = async (amount: number, onSuccess: (paymentId: str
         color: '#3399cc',
       },
       modal: {
-        ondismiss: function() {
-          console.log('Checkout form closed');
-        }
+        ondismiss: onCancel,
+        escape: onCancel,
+        backdropclose: false
       }
     };
 
@@ -55,4 +60,4 @@ export const displayRazorpay = async (amount: number, onSuccess: (paymentId: str
   } catch (error) {
     onError(error instanceof Error ? error.message : 'Failed to create payment order');
   }
-}; 
+};

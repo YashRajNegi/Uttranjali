@@ -3,6 +3,9 @@ import Order from '../models/Order';
 import Product from '../models/Product';
 import Stripe from 'stripe';
 import { AuthRequest } from '../types/AuthRequest';
+import { sendOrderConfirmationEmail } from '../services/emailService';
+import { sendOrderSMS } from '../services/smsService';
+import User from '../models/User';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',
@@ -21,31 +24,74 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
       orderItems,
       shippingAddress,
       paymentMethod,
+      paymentResult,
       itemsPrice,
       taxPrice,
       shippingPrice,
       totalPrice,
     } = req.body;
 
-    if (orderItems && orderItems.length === 0) {
+    if (!orderItems || orderItems.length === 0) {
       return res.status(400).json({ message: 'No order items' });
+    }
+
+    // Validate required shippingAddress fields
+    if (!shippingAddress?.address || !shippingAddress?.city || !shippingAddress?.postalCode || !shippingAddress?.country) {
+      return res.status(400).json({ 
+        message: 'Shipping address is incomplete',
+        received: shippingAddress
+      });
     }
 
     const order = new Order({
       orderItems,
       user: req.user._id,
-      shippingAddress,
+      shippingAddress: {
+        address: shippingAddress.address,
+        city: shippingAddress.city,
+        postalCode: shippingAddress.postalCode,
+        country: shippingAddress.country,
+      },
       paymentMethod,
+      paymentResult,
       itemsPrice,
       taxPrice,
       shippingPrice,
       totalPrice,
+      // Mark as paid immediately if paymentResult is provided (e.g. Razorpay)
+      isPaid: !!paymentResult,
+      paidAt: paymentResult ? new Date() : undefined,
     });
 
     const createdOrder = await order.save();
+    
+    // Send notifications asynchronously to avoid blocking the response
+    // Fetch user details for notifications in the background
+    User.findById(req.user._id).then(user => {
+      if (user) {
+        // Send notifications without awaiting them so the user doesn't wait
+        sendOrderConfirmationEmail(user.email, createdOrder, user.name).catch(err => 
+          // Silently handle email errors in production
+          null
+        );
+        
+        if (user.phone) {
+          sendOrderSMS(user.phone, createdOrder._id.toString(), totalPrice).catch(err => 
+            // Silently handle SMS errors in production
+            null
+          );
+        }
+      }
+    });
+    
+    // Return response immediately without waiting for notifications
     res.status(201).json(createdOrder);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    console.error('Order creation error:', error);
+    res.status(500).json({ 
+      message: 'Failed to create order',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 };
 
@@ -110,7 +156,6 @@ export const updateOrderToDelivered = async (req: AuthRequest, res: Response) =>
       res.status(404).json({ message: 'Order not found' });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -126,7 +171,6 @@ export const getMyOrders = async (req: AuthRequest, res: Response) => {
     const orders = await Order.find({ user: req.user._id });
     res.json(orders);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -142,7 +186,6 @@ export const getOrders = async (req: AuthRequest, res: Response) => {
     const orders = await Order.find({}).populate('user', 'id name');
     res.json(orders);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -162,7 +205,6 @@ export const updateOrderStatus = async (req: AuthRequest, res: Response) => {
     const updatedOrder = await order.save();
     res.json(updatedOrder);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 }; 

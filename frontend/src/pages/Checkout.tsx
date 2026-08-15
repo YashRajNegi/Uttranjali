@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Check, ArrowRight, Plus, Edit2, Loader2 } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
+import { Check, ArrowRight, Plus, Edit2, Loader2, CreditCard, Shield, Truck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import ImageWithFallback from '@/components/ImageWithFallback';
 import { 
   Card, 
   CardContent, 
@@ -11,21 +12,21 @@ import {
   CardFooter, 
   CardHeader, 
   CardTitle 
-} from '../components/ui/card';
-import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
-import { Separator } from '../components/ui/separator';
+} from '@/components/ui/card';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Separator } from '@/components/ui/separator';
 import { 
   Tabs, 
   TabsContent, 
   TabsList, 
   TabsTrigger 
-} from '../components/ui/tabs';
-import { useCart } from '../context/CartContext';
-import { useAddress } from '../contexts/AddressContext';
-import { toast } from '../components/ui/use-toast';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { ProtectedRoute } from '../components/ProtectedRoute';
+} from '@/components/ui/tabs';
+import { useCart } from '@/context/CartContext';
+import { useAddress } from '@/contexts/AddressContext';
+import { toast } from '@/components/ui/use-toast';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { orderAPI } from '@/services/orderAPI';
 import { displayRazorpay } from '@/services/paymentService';
 
@@ -106,9 +107,7 @@ const Checkout = () => {
         totalPrice: Number(orderTotal)
       };
 
-      console.log('Cart items:', items);
-      console.log('Sending order data:', JSON.stringify(orderData, null, 2));
-
+      
       if (!orderData.orderItems || orderData.orderItems.length === 0) {
         throw new Error('No items in order data');
       }
@@ -320,18 +319,41 @@ const Checkout = () => {
                 </TabsContent>
                 
                 <TabsContent value="payment" className="p-6">
-                    <h2 className="text-lg font-semibold mb-4">Payment Method</h2>
-                  <div className="flex flex-col items-center mb-6">
-                    {/* Optional: Show payment method icons */}
-                    <img src="/payment-methods.png" alt="Payment Methods" style={{ maxWidth: 300, marginBottom: 16 }} />
+                    <div className="text-center mb-6">
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-50 to-emerald-100 rounded-full mb-4">
+                        <CreditCard className="w-8 h-8 text-organic-primary" />
+                      </div>
+                      <h2 className="text-xl font-bold text-gray-900 mb-2">Secure Payment</h2>
+                      <p className="text-sm text-muted-foreground">Your payment information is encrypted and secure</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-4 mb-6">
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <Shield className="w-6 h-6 text-green-600 mx-auto mb-2" />
+                        <p className="text-xs font-medium">Secure</p>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <Truck className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                        <p className="text-xs font-medium">Fast Delivery</p>
+                      </div>
+                      <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <CreditCard className="w-6 h-6 text-purple-600 mx-auto mb-2" />
+                        <p className="text-xs font-medium">Multiple Options</p>
+                      </div>
+                    </div>
+
                     <Button
-                      className="bg-organic-primary hover:bg-organic-dark text-white w-full"
+                      className="bg-gradient-to-r from-organic-primary to-emerald-600 hover:from-organic-dark hover:to-emerald-700 text-white w-full h-12 text-lg font-medium shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
                       onClick={async () => {
                         setIsProcessing(true);
+                        
                         await displayRazorpay(
                           orderTotal,
                           async (paymentId) => {
                             try {
+                              // Show processing state immediately
+                              setIsProcessing(true);
+                              
                               const selectedAddressObj = addresses.find(addr => addr.id === selectedAddress) || defaultAddress;
                               if (!selectedAddressObj) throw new Error("No address selected");
 
@@ -344,30 +366,49 @@ const Checkout = () => {
                                   product: item.id
                                 })),
                                 shippingAddress: {
-                                  address: selectedAddressObj.address,
+                                  address: selectedAddressObj.address + (selectedAddressObj.apartment ? `, ${selectedAddressObj.apartment}` : ''),
                                   city: selectedAddressObj.city,
-                                  postalCode: selectedAddressObj.zipCode,
-                                  country: "India"
+                                  postalCode: selectedAddressObj.zipCode || '000000',
+                                  country: 'India'
                                 },
-                                paymentMethod: "razorpay",
-                                itemsPrice: Number(total),
-                                taxPrice: 0,
-                                shippingPrice: Number(shipping),
-                                totalPrice: Number(orderTotal),
-                                paymentId // Save the Razorpay payment ID
+                                paymentMethod: 'razorpay',
+                                paymentResult: {
+                                  id: paymentId,
+                                  status: 'completed',
+                                  update_time: new Date().toISOString(),
+                                  email_address: 'customer@example.com'
+                                },
+                                itemsPrice: total,
+                                shippingPrice: shipping,
+                                totalPrice: orderTotal,
+                                taxPrice: 0
                               };
 
-                              const order = await orderAPI.createOrder(orderData);
+                              const createdOrder = await orderAPI.createOrder(orderData);
+                              
+                              // Clear cart and navigate immediately for better UX
                               clearCart();
+                              navigate(`/orders/${createdOrder._id}`);
+                              
+                              // Show success toast after navigation
                               toast({
-                                title: "Order placed successfully!",
-                                description: "Thank you for your purchase. Your order has been received.",
+                                title: "Payment Successful",
+                                description: "Your order has been placed successfully!",
                               });
-                              navigate(`/orders/${order._id}`);
                             } catch (error) {
+                              // More specific error messages
+                              let errorMessage = "Failed to create order after payment. Please contact support.";
+                              if (error.response?.data?.message) {
+                                errorMessage = error.response.data.message;
+                              } else if (error.response?.data) {
+                                errorMessage = JSON.stringify(error.response.data);
+                              } else if (error.message) {
+                                errorMessage = error.message;
+                              }
+                              
                               toast({
-                                title: "Failed to place order",
-                                description: error instanceof Error ? error.message : "An error occurred while placing your order. Please try again.",
+                                title: "Order Failed",
+                                description: errorMessage,
                                 variant: "destructive"
                               });
                             } finally {
@@ -376,26 +417,40 @@ const Checkout = () => {
                           },
                           (error) => {
                             toast({
-                              title: 'Error',
+                              title: "Payment Failed",
                               description: error,
-                              variant: 'destructive',
+                              variant: "destructive"
+                            });
+                            setIsProcessing(false);
+                          },
+                          () => {
+                            // Handle payment cancellation
+                            toast({
+                              title: "Payment Cancelled",
+                              description: "You have cancelled the payment process.",
                             });
                             setIsProcessing(false);
                           }
                         );
                       }}
-                      disabled={isProcessing}
                     >
                       {isProcessing ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Processing...
+                          <div className="flex items-center">
+                            <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                            <div>
+                              <div className="font-medium">Processing Payment</div>
+                              <div className="text-xs opacity-75">Please wait...</div>
+                            </div>
+                          </div>
                         </>
                       ) : (
-                        'Pay with Razorpay'
+                        <div className="flex items-center">
+                          <CreditCard className="mr-2 h-5 w-5" />
+                          <span>Pay ₹{orderTotal.toFixed(2)} Securely</span>
+                        </div>
                       )}
-                      </Button>
-                    </div>
+                    </Button>
                 </TabsContent>
               </Tabs>
             </div>
@@ -415,16 +470,20 @@ const Checkout = () => {
                       <div key={item.id} className="flex justify-between">
                         <div className="flex items-center">
                           <div className="relative mr-3">
-                            <img 
+                            <ImageWithFallback 
                               src={item.image} 
                               alt={item.name}
-                              className="w-12 h-12 object-cover rounded-md"
+                              size="sm"
+                              className="shadow-sm"
                             />
-                            <span className="absolute -top-2 -right-2 bg-organic-primary text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                            <span className="absolute -top-2 -right-2 bg-organic-primary text-white text-xs w-5 h-5 flex items-center justify-center rounded-full shadow-md">
                               {item.quantity}
                             </span>
                           </div>
-                          <span className="text-sm">{item.name}</span>
+                          <div className="flex-1">
+                            <span className="text-sm font-medium">{item.name}</span>
+                            <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                          </div>
                         </div>
                         <span className="text-sm font-medium">
                             ₹{(item.price * item.quantity).toFixed(2)}

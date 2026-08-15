@@ -152,7 +152,7 @@ const AdminProductsPage: React.FC = () => {
       const formData = new FormData();
       formData.append('image', file);
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       if (!token) {
         toast({
           title: 'Error',
@@ -164,8 +164,6 @@ const AdminProductsPage: React.FC = () => {
 
       // Get the backend URL from environment or use default
       const backendUrl = import.meta.env.VITE_API_URL;
-      console.log('Uploading to:', `${backendUrl}/api/upload`);
-      console.log('Token present:', !!token); // Debug log
 
       const response = await fetch(`${backendUrl}/api/upload`, {
         method: 'POST',
@@ -187,7 +185,6 @@ const AdminProductsPage: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log('Upload response:', data);
       setImageUrl(data.url);
       setImagePreview(data.url);
       form.setValue('image', data.url);

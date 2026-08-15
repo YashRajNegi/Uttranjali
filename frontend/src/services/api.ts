@@ -7,17 +7,30 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true
+  withCredentials: true,
+  timeout: 10000, // 10 second timeout
 });
 
 // Add token to requests if it exists
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('accessToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+// Response interceptor for error handling
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('accessToken');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Auth API
 export const authAPI = {
@@ -67,9 +80,20 @@ export interface Product {
   unit?: string;
 }
 
-// Product API
+// Product API with optimized queries
 export const productAPI = {
-  getProducts: () => api.get('/products'),
+  getProducts: (page: number = 1, limit: number = 20, category?: string, brand?: string, minPrice?: number, maxPrice?: number, sortBy?: string, sortOrder?: number, search?: string) => {
+    const params: any = { page, limit };
+    if (category) params.category = category;
+    if (brand) params.brand = brand;
+    if (minPrice !== undefined) params.minPrice = minPrice;
+    if (maxPrice !== undefined) params.maxPrice = maxPrice;
+    if (sortBy) params.sortBy = sortBy;
+    if (sortOrder !== undefined) params.sortOrder = sortOrder;
+    if (search) params.search = search;
+    
+    return api.get('/products', { params });
+  },
   getProductById: (id: string) => api.get(`/products/${id}`),
   createProduct: (data: any) => api.post('/products', data),
   updateProduct: (id: string, data: any) => api.put(`/products/${id}`, data),
@@ -91,4 +115,4 @@ export const orderAPI = {
     api.put(`/orders/${id}/deliver`),
 };
 
-export default api; 
+export default api;

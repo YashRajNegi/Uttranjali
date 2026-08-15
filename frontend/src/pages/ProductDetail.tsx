@@ -78,14 +78,7 @@ const ProductDetail: React.FC = () => {
                 </div>
                 <div className="text-2xl font-bold text-green-700 mb-2">₹{product.price}</div>
                 <div className="mb-4 text-gray-600">{product.description}</div>
-                <div className="mb-4">
-                  {product.countInStock > 0 ? (
-                    <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">In Stock</span>
-                  ) : (
-                    <span className="inline-block px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Out of Stock</span>
-                  )}
-                </div>
-                <hr className="my-6 border-gray-200" />
+                                <hr className="my-6 border-gray-200" />
                 {/* Features Section */}
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold mb-2">Key Features</h3>

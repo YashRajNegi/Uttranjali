@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X, User, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,6 +14,23 @@ import {
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 
+// Debounce utility function
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
 const Navbar: React.FC = () => {
   const { itemCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,6 +38,9 @@ const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  
+  // Debounced search query
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +50,13 @@ const Navbar: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Auto-navigate to products page when debounced search query changes
+  useEffect(() => {
+    if (debouncedSearchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(debouncedSearchQuery)}`);
+    }
+  }, [debouncedSearchQuery, navigate]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -93,7 +120,7 @@ const Navbar: React.FC = () => {
 
   return (
     <motion.nav 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 ${
       isScrolled ? 'bg-white/90 backdrop-blur-lg shadow-[0_2px_10px_-3px_rgba(0,0,0,0.1)]' : 'bg-white'
       }`}
       initial="hidden"
@@ -139,7 +166,7 @@ const Navbar: React.FC = () => {
                 >
                   {link.label}
                   <motion.div
-                    className="absolute -bottom-1 left-0 w-0 h-0.5 bg-organic-primary group-hover:w-full transition-all duration-300"
+                    className="absolute -bottom-1 left-0 w-0 h-0.5 bg-organic-primary group-hover:w-full "
                     whileHover={{ width: "100%" }}
                   />
             </Link>

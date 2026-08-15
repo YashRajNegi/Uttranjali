@@ -23,7 +23,7 @@ const uploadInstance = axios.create({
 // Add auth token to all requests
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -51,7 +51,7 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         // If validation fails, clear token and redirect to login
-        localStorage.removeItem('token');
+        localStorage.removeItem('accessToken');
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
@@ -150,7 +150,7 @@ export const adminService = {
   // Image Upload
   async uploadImage(imageUrl: string): Promise<{ url: string; public_id: string }> {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -173,9 +173,7 @@ export const adminService = {
   // Order Management
   async getOrders(): Promise<Order[]> {
     try {
-      console.log('Fetching orders from:', '/api/orders'); // Debug log
       const response = await axiosInstance.get('/api/orders');
-      console.log('Orders response:', response.data); // Debug log
       return response.data;
     } catch (error) {
       console.error('Error fetching orders:', {
@@ -212,7 +210,7 @@ export const adminService = {
         orderId: id,
         status,
         response: error.response?.data,
-        status: error.response?.status
+        statusCode: error.response?.status
       });
       throw error;
     }
